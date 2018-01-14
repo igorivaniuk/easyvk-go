@@ -190,3 +190,16 @@ type VideoObject struct {
 	} `json:"reposts"`
 	Repeat int `json:"repeat"`
 }
+
+type GroupObject struct {
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	ScreenName string `json:"screen_name"`
+	IsClosed   int    `json:"is_closed"`
+	Type       string `json:"type"`
+	Photo50    string `json:"photo_50"`
+	Photo100   string `json:"photo_100"`
+	Photo200   string `json:"photo_200"`
+
+	MembersCount int `json:"members_count,omitempty"`
+}

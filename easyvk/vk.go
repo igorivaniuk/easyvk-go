@@ -39,6 +39,7 @@ type VK struct {
 	Status      Status
 	Upload      Upload
 	Wall        Wall
+	Groups      Groups
 }
 
 // WithToken helps to initialize your
@@ -55,6 +56,7 @@ func WithToken(token string) VK {
 	vk.Status = Status{&vk}
 	vk.Upload = Upload{}
 	vk.Wall = Wall{&vk}
+	vk.Groups = Groups{&vk}
 	return vk
 }
 
