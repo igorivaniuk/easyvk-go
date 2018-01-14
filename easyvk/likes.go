@@ -1,8 +1,8 @@
 package easyvk
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 // A Likes describes a set of methods to work with likes.

@@ -17,7 +17,7 @@ type Status struct {
 // status of a user or community
 // https://vk.com/dev/status.get
 func (s *Status) Get(id int) (string, error) {
-	params := map[string]string{"user_id": fmt.Sprint(id) }
+	params := map[string]string{"user_id": fmt.Sprint(id)}
 	resp, err := s.vk.Request("status.get", params)
 	if err != nil {
 		return "", err

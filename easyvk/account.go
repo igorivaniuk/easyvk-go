@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	notifyBit        = 1 << iota
+	notifyBit = 1 << iota
 	friendsBit
 	photosBit
 	audioBit
@@ -49,18 +49,18 @@ type Account struct {
 // https://vk.com/dev/account.getInfo
 type AccountGetInfoResponse struct {
 	Country         string `json:"country"`
-	HTTPS           int `json:"https_required"`
-	TwoFactor       int `json:"2fa_required"`
-	OwnPostsDefault int `json:"own_posts_default"`
-	NoWallReplies   int `json:"no_wall_replies"`
-	Intro           int `json:"intro"`
-	Lang            int `json:"lang"`
+	HTTPS           int    `json:"https_required"`
+	TwoFactor       int    `json:"2fa_required"`
+	OwnPostsDefault int    `json:"own_posts_default"`
+	NoWallReplies   int    `json:"no_wall_replies"`
+	Intro           int    `json:"intro"`
+	Lang            int    `json:"lang"`
 }
 
 // GetInfo returns current account info.
 // https://vk.com/dev/account.getInfo
 func (a *Account) GetInfo(fields string) (AccountGetInfoResponse, error) {
-	params := map[string]string{"fields": fields }
+	params := map[string]string{"fields": fields}
 	resp, err := a.vk.Request("account.getInfo", params)
 	if err != nil {
 		return AccountGetInfoResponse{}, err
@@ -79,19 +79,19 @@ type AccountGetProfileInfoResponse struct {
 	FirstName       string `json:"first_name"`
 	LastName        string `json:"last_name"`
 	ScreenName      string `json:"screen_name"`
-	Sex             int `json:"sex"`
-	Relation        int `json:"relation"`
+	Sex             int    `json:"sex"`
+	Relation        int    `json:"relation"`
 	Birthday        string `json:"bdate"`
-	BirthVisibility int `json:"bdate_visibility"`
+	BirthVisibility int    `json:"bdate_visibility"`
 	Hometown        string `json:"home_town"`
 	Status          string `json:"status"`
 	Phone           string `json:"phone"`
-	Country struct {
-		ID    int `json:"id"`
+	Country         struct {
+		ID    int    `json:"id"`
 		Title string `json:"title"`
 	} `json:"country"`
 	City struct {
-		ID    int `json:"id"`
+		ID    int    `json:"id"`
 		Title string `json:"title"`
 	} `json:"city"`
 }
@@ -130,7 +130,7 @@ type AccountGetCountersResponse struct {
 // GetCounters returns values of user counters.
 // https://vk.com/dev/account.getCounters
 func (a *Account) GetCounters(filter string) (AccountGetCountersResponse, error) {
-	params := map[string]string{"filter": filter }
+	params := map[string]string{"filter": filter}
 	resp, err := a.vk.Request("account.getCounters", params)
 	if err != nil {
 		return AccountGetCountersResponse{}, err
@@ -169,7 +169,7 @@ type AccountGetAppPermissionsResponse struct {
 // GetAppPermissions returns settings of the user in this application.
 // https://vk.com/dev/account.getAppPermissions
 func (a *Account) GetAppPermissions(userID uint) (AccountGetAppPermissionsResponse, error) {
-	params := map[string]string{"user_id": fmt.Sprint(userID) }
+	params := map[string]string{"user_id": fmt.Sprint(userID)}
 	resp, err := a.vk.Request("account.getAppPermissions", params)
 	if err != nil {
 		return AccountGetAppPermissionsResponse{}, err

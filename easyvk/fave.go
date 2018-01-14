@@ -1,8 +1,8 @@
 package easyvk
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 // A Fave describes a set of methods

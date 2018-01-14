@@ -17,14 +17,14 @@ type Photos struct {
 // https://vk.com/dev/photos.getWallUploadServer
 type PhotosGetWallUploadServerResponse struct {
 	UploadURL string `json:"upload_url"`
-	AlbumID   int `json:"album_id"`
-	UserID    int `json:"user_id"`
+	AlbumID   int    `json:"album_id"`
+	UserID    int    `json:"user_id"`
 }
 
 // GetWallUploadServer returns the server address for photo upload onto a user's wall.
 // https://vk.com/dev/photos.getWallUploadServer
 func (p *Photos) GetWallUploadServer(groupID uint) (PhotosGetWallUploadServerResponse, error) {
-	params := map[string]string{"group_id": fmt.Sprint(groupID) }
+	params := map[string]string{"group_id": fmt.Sprint(groupID)}
 	resp, err := p.vk.Request("photos.getWallUploadServer", params)
 	if err != nil {
 		return PhotosGetWallUploadServerResponse{}, err
