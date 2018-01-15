@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"time"
 )
 
 const (
@@ -31,6 +32,8 @@ const (
 type VK struct {
 	AccessToken string
 	Version     string
+	Debug       bool
+	ApiUrl      string
 	Account     Account
 	Board       Board
 	Fave        Fave
@@ -42,28 +45,33 @@ type VK struct {
 	Groups      Groups
 }
 
+func (vk *VK) SetDebug(val bool) {
+	vk.Debug = val
+}
+
 // WithToken helps to initialize your
 // VK object with token.
-func WithToken(token string) VK {
-	vk := VK{}
+func WithToken(token string) *VK {
+	vk := &VK{}
+	vk.ApiUrl = apiURL
 	vk.AccessToken = token
 	vk.Version = version
-	vk.Account = Account{&vk}
-	vk.Board = Board{&vk}
-	vk.Fave = Fave{&vk}
-	vk.Likes = Likes{&vk}
-	vk.Photos = Photos{&vk}
-	vk.Status = Status{&vk}
+	vk.Account = Account{vk}
+	vk.Board = Board{vk}
+	vk.Fave = Fave{vk}
+	vk.Likes = Likes{vk}
+	vk.Photos = Photos{vk}
+	vk.Status = Status{vk}
 	vk.Upload = Upload{}
-	vk.Wall = Wall{&vk}
-	vk.Groups = Groups{&vk}
+	vk.Wall = Wall{vk}
+	vk.Groups = Groups{vk}
 	return vk
 }
 
 // WithAuth helps to initialize your VK object
 // with signing in by login, password, client id and scope
 // Scope must be a string like "friends,wall"
-func WithAuth(login, password, clientID, scope string) (VK, error) {
+func WithAuth(login, password, clientID, scope string) (*VK, error) {
 	u := fmt.Sprintf(authURL, clientID, scope, version)
 	jar, _ := cookiejar.New(nil)
 	client := &http.Client{
@@ -72,7 +80,7 @@ func WithAuth(login, password, clientID, scope string) (VK, error) {
 
 	resp, err := client.Get(u)
 	if err != nil {
-		return VK{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -83,25 +91,25 @@ func WithAuth(login, password, clientID, scope string) (VK, error) {
 
 	resp, err = client.PostForm(u, args)
 	if err != nil {
-		return VK{}, err
+		return nil, err
 	}
 
 	if resp.Request.URL.Path != "/blank.html" {
 		args, u := parseForm(resp.Body)
 		resp, err := client.PostForm(u, args)
 		if err != nil {
-			return VK{}, err
+			return nil, err
 		}
 		defer resp.Body.Close()
 
 		if resp.Request.URL.Path != "/blank.html" {
-			return VK{}, errors.New("can't log in")
+			return nil, errors.New("can't log in")
 		}
 	}
 
 	urlArgs, err := url.ParseQuery(resp.Request.URL.Fragment)
 	if err != nil {
-		return VK{}, err
+		return nil, err
 	}
 
 	return WithToken(urlArgs["access_token"][0]), nil
@@ -160,7 +168,7 @@ func parseForm(body io.ReadCloser) (url.Values, string) {
 
 // Request provides access to VK API methods.
 func (vk *VK) Request(method string, params map[string]string) ([]byte, error) {
-	u, err := url.Parse(apiURL + method)
+	u, err := url.Parse(vk.ApiUrl + method)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +180,7 @@ func (vk *VK) Request(method string, params map[string]string) ([]byte, error) {
 	query.Set("access_token", vk.AccessToken)
 	query.Set("v", vk.Version)
 	u.RawQuery = query.Encode()
-
+	start := time.Now()
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -181,6 +189,13 @@ func (vk *VK) Request(method string, params map[string]string) ([]byte, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		if vk.Debug {
+			fmt.Printf(
+				"[VkApi] Call method %s, with params: %#v \n[VkApi] Network error %#v \n[VkApi] take: %s\n",
+				method, params, err,
+				time.Since(start),
+			)
+		}
 		return nil, err
 	}
 
@@ -191,7 +206,22 @@ func (vk *VK) Request(method string, params map[string]string) ([]byte, error) {
 	err = json.Unmarshal(body, &handler)
 
 	if handler.Error != nil {
+		if vk.Debug {
+			fmt.Printf(
+				"[VkApi] Call method %s, with params: %#v \n[VkApi] Vk error %v \n[VkApi] take: %s\n",
+				method, params, body,
+				time.Since(start),
+			)
+		}
 		return nil, handler.Error
+	}
+
+	if vk.Debug {
+		fmt.Printf(
+			"[VkApi] Call method %s, with params: %#v \n[VkApi] Response %v \n[VkApi] take: %s\n",
+			method, params, string(handler.Response),
+			time.Since(start),
+		)
 	}
 
 	return handler.Response, nil
