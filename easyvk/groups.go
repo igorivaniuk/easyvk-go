@@ -73,7 +73,7 @@ type GetCallbackServersResponse struct {
 type CallbackServer struct {
 	ID        int    `json:"id"`
 	Title     string `json:"title"`
-	CreatorId string `json:"creator_id"`
+	CreatorId int    `json:"creator_id"`
 	Url       string `json:"url"`
 	SecretKey string `json:"secret_key"`
 	/*
@@ -133,6 +133,33 @@ func (g *Groups) AddCallbackServer(groupId int, url, title, secretKey string) (*
 	err = json.Unmarshal(resp, res)
 	if err != nil {
 		return nil, err
+	}
+
+	return res, nil
+}
+
+// https://vk.com/dev/groups.editCallbackServer
+type EditCallbackServerResponse int
+
+// https://vk.com/dev/groups.editCallbackServer
+func (g *Groups) EditCallbackServer(groupId, serverId int, url, title, secretKey string) (EditCallbackServerResponse, error) {
+	params := map[string]string{
+		"group_id":   strconv.Itoa(groupId),
+		"server_id":  strconv.Itoa(serverId),
+		"url":        url,
+		"title":      title,
+		"secret_key": secretKey,
+	}
+	resp, err := g.vk.Request("groups.editCallbackServer", params)
+
+	var res EditCallbackServerResponse
+	if err != nil {
+		return res, err
+	}
+
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return res, err
 	}
 
 	return res, nil
