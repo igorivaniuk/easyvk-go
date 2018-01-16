@@ -164,3 +164,79 @@ func (g *Groups) EditCallbackServer(groupId, serverId int, url, title, secretKey
 
 	return res, nil
 }
+
+// https://vk.com/dev/groups.setCallbackSettings
+type SetCallbackSettingsResponse int
+
+var knowEvents = []string{
+	"message_new",
+	"message_reply",
+	"message_allow",
+	"message_deny",
+	"photo_new",
+	"audio_new",
+	"video_new",
+	"wall_reply_new",
+	"wall_reply_edit",
+	"wall_reply_delete",
+	"wall_reply_restore",
+	"wall_post_new",
+	"wall_repost",
+	"board_post_new",
+	"board_post_edit",
+	"board_post_restore",
+	"board_post_delete",
+	"photo_comment_new",
+	"photo_comment_edit",
+	"photo_comment_delete",
+	"photo_comment_restore",
+	"video_comment_new",
+	"video_comment_edit",
+	"video_comment_delete",
+	"video_comment_restore",
+	"market_comment_new",
+	"market_comment_edit",
+	"market_comment_delete",
+	"market_comment_restore",
+	"poll_vote_new",
+	"group_join",
+	"group_leave",
+}
+
+// https://vk.com/dev/groups.setCallbackSettings
+func (g *Groups) SetCallbackSettings(groupId, serverId int, enableEvents []string) (SetCallbackSettingsResponse, error) {
+	params := map[string]string{
+		"group_id":  strconv.Itoa(groupId),
+		"server_id": strconv.Itoa(serverId),
+	}
+
+	var enabled = func(event string) bool {
+		for _, ev := range enableEvents {
+			if ev == event {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, event := range knowEvents {
+		if enabled(event) {
+			params[event] = "1"
+		} else {
+			params[event] = "0"
+		}
+	}
+
+	resp, err := g.vk.Request("groups.setCallbackSettings", params)
+	var res SetCallbackSettingsResponse
+	if err != nil {
+		return res, err
+	}
+
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
