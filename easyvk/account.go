@@ -34,7 +34,6 @@ const (
 	_
 	_
 	_
-	_
 	marketBit
 )
 
