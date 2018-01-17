@@ -44,6 +44,8 @@ type VK struct {
 	Wall        Wall
 	Groups      Groups
 	Users       Users
+	Video       Video
+	Market      Market
 }
 
 func (vk *VK) SetDebug(val bool) {
@@ -67,6 +69,8 @@ func WithToken(token string) *VK {
 	vk.Wall = Wall{vk}
 	vk.Groups = Groups{vk}
 	vk.Users = Users{vk}
+	vk.Video = Video{vk}
+	vk.Market = Market{vk}
 	return vk
 }
 

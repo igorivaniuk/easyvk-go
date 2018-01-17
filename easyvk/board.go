@@ -96,3 +96,23 @@ func (b *Board) EditTopic(groupID, topicID uint, title string) (bool, error) {
 	}
 	return ok == 1, nil
 }
+
+// https://vk.com/dev/board.deleteComment
+func (b *Board) DeleteComment(groupID, topicID, commentId int) (bool, error) {
+	params := map[string]string{
+		"group_id":   fmt.Sprint(groupID),
+		"topic_id":   fmt.Sprint(topicID),
+		"comment_id": fmt.Sprint(commentId),
+	}
+
+	resp, err := b.vk.Request("board.deleteComment", params)
+	if err != nil {
+		return false, err
+	}
+
+	ok, err := strconv.ParseUint(string(resp), 10, 8)
+	if err != nil {
+		return false, err
+	}
+	return ok == 1, nil
+}

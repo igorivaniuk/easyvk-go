@@ -85,13 +85,13 @@ func (g *Groups) IsMember(groupId int, userId int) (*IsMember, error) {
 
 type GetMembersIdsParams struct {
 	GroupId int
-	Sort string
-	Offset int
-	Count int
+	Sort    string
+	Offset  int
+	Count   int
 }
 
 type GetMembersIdsResponse struct {
-	Count int `json:"count"`
+	Count int   `json:"count"`
 	Items []int `json:"items"`
 }
 
@@ -104,9 +104,9 @@ func (g *Groups) GetMembersIds(p GetMembersIdsParams) (*GetMembersIdsResponse, e
 	}
 	params := map[string]string{
 		"group_id": strconv.Itoa(p.GroupId),
-		"sort":  p.Sort,
-		"offset":  strconv.Itoa(p.Offset),
-		"count":  strconv.Itoa(count),
+		"sort":     p.Sort,
+		"offset":   strconv.Itoa(p.Offset),
+		"count":    strconv.Itoa(count),
 	}
 	resp, err := g.vk.Request("groups.getMembers", params)
 	if err != nil {
@@ -123,15 +123,15 @@ func (g *Groups) GetMembersIds(p GetMembersIdsParams) (*GetMembersIdsResponse, e
 
 type GetMembersInfoParams struct {
 	GroupId int
-	Sort string
-	Offset int
-	Count int
-	Fields string
-	Filter string
+	Sort    string
+	Offset  int
+	Count   int
+	Fields  string
+	Filter  string
 }
 
 type GetMembersInfoResponse struct {
-	Count int `json:"count"`
+	Count int          `json:"count"`
 	Items []UserObject `json:"items"`
 }
 
@@ -148,11 +148,11 @@ func (g *Groups) GetMembersInfo(p GetMembersInfoParams) (*GetMembersInfoResponse
 	}
 	params := map[string]string{
 		"group_id": strconv.Itoa(p.GroupId),
-		"sort":  p.Sort,
-		"offset":  strconv.Itoa(p.Offset),
-		"count":  strconv.Itoa(count),
-		"fields":  p.Fields,
-		"filter":  p.Filter,
+		"sort":     p.Sort,
+		"offset":   strconv.Itoa(p.Offset),
+		"count":    strconv.Itoa(count),
+		"fields":   p.Fields,
+		"filter":   p.Filter,
 	}
 	resp, err := g.vk.Request("groups.getMembers", params)
 	if err != nil {

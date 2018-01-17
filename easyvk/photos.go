@@ -3,6 +3,7 @@ package easyvk
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // A Photos describes a set of methods
@@ -76,4 +77,23 @@ func (p *Photos) SaveWallPhoto(par PhotosSaveWallPhotoParams) ([]PhotoObject, er
 		return nil, err
 	}
 	return info, nil
+}
+
+// https://vk.com/dev/photos.deleteComment
+func (p *Photos) DeleteComment(ownerID, commentId int) (bool, error) {
+	params := map[string]string{
+		"owner_id":   fmt.Sprint(ownerID),
+		"comment_id": fmt.Sprint(commentId),
+	}
+
+	resp, err := p.vk.Request("photos.deleteComment", params)
+	if err != nil {
+		return false, err
+	}
+
+	ok, err := strconv.ParseUint(string(resp), 10, 8)
+	if err != nil {
+		return false, err
+	}
+	return ok == 1, nil
 }

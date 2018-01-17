@@ -3,6 +3,7 @@ package easyvk
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // A Wall describes a set of methods
@@ -69,4 +70,23 @@ func (w *Wall) Post(p WallPostParams) (int, error) {
 		return 0, err
 	}
 	return info.PostID, nil
+}
+
+// https://vk.com/dev/wall.deleteComment
+func (w *Wall) DeleteComment(ownerID, commentId int) (bool, error) {
+	params := map[string]string{
+		"owner_id":   fmt.Sprint(ownerID),
+		"comment_id": fmt.Sprint(commentId),
+	}
+
+	resp, err := w.vk.Request("wall.deleteComment", params)
+	if err != nil {
+		return false, err
+	}
+
+	ok, err := strconv.ParseUint(string(resp), 10, 8)
+	if err != nil {
+		return false, err
+	}
+	return ok == 1, nil
 }
