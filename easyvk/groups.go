@@ -83,6 +83,90 @@ func (g *Groups) IsMember(groupId int, userId int) (*IsMember, error) {
 	return res, nil
 }
 
+type GetMembersIdsParams struct {
+	GroupId int
+	Sort string
+	Offset int
+	Count int
+}
+
+type GetMembersIdsResponse struct {
+	Count int `json:"count"`
+	Items []int `json:"items"`
+}
+
+// https://vk.com/dev/groups.getMembers
+func (g *Groups) GetMembersIds(p GetMembersIdsParams) (*GetMembersIdsResponse, error) {
+	// set default count
+	count := 100
+	if p.Count != 0 {
+		count = p.Count
+	}
+	params := map[string]string{
+		"group_id": strconv.Itoa(p.GroupId),
+		"sort":  p.Sort,
+		"offset":  strconv.Itoa(p.Offset),
+		"count":  strconv.Itoa(count),
+	}
+	resp, err := g.vk.Request("groups.getMembers", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &GetMembersIdsResponse{}
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+type GetMembersInfoParams struct {
+	GroupId int
+	Sort string
+	Offset int
+	Count int
+	Fields string
+	Filter string
+}
+
+type GetMembersInfoResponse struct {
+	Count int `json:"count"`
+	Items []UserObject `json:"items"`
+}
+
+// https://vk.com/dev/groups.getMembers
+func (g *Groups) GetMembersInfo(p GetMembersInfoParams) (*GetMembersInfoResponse, error) {
+	// set default count
+	count := 100
+	if p.Count != 0 {
+		count = p.Count
+	}
+	// set field for return user object not id
+	if p.Fields == "" {
+		p.Fields = "photo_50"
+	}
+	params := map[string]string{
+		"group_id": strconv.Itoa(p.GroupId),
+		"sort":  p.Sort,
+		"offset":  strconv.Itoa(p.Offset),
+		"count":  strconv.Itoa(count),
+		"fields":  p.Fields,
+		"filter":  p.Filter,
+	}
+	resp, err := g.vk.Request("groups.getMembers", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &GetMembersInfoResponse{}
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // String with the confirmation code.
 // https://vk.com/dev/groups.getCallbackConfirmationCode
 type GetCallbackConfirmationCodeResponse struct {

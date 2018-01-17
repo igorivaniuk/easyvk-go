@@ -12,7 +12,9 @@ type UserObject struct {
 	Domain     string `json:"domain"`
 	ScreenName string `json:"screen_name"`
 	Bdate      string `json:"bdate"`
-	City       struct {
+	// one of: moderator, editor, administrator, creator
+	Role string `json:"role"`
+	City struct {
 		ID    int    `json:"id"`
 		Title string `json:"title"`
 	} `json:"city"`
