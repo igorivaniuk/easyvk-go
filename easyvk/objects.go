@@ -191,6 +191,13 @@ type VideoObject struct {
 	Repeat int `json:"repeat"`
 }
 
+const (
+	_ = iota
+	AdminLevelModerator
+	AdminLevelEditor
+	AdminLevelAdministrator
+)
+
 type GroupObject struct {
 	Id         int    `json:"id"`
 	Name       string `json:"name"`
@@ -201,5 +208,21 @@ type GroupObject struct {
 	Photo100   string `json:"photo_100"`
 	Photo200   string `json:"photo_200"`
 
+	IsAdmin    int `json:"is_admin"`
+	AdminLevel int `json:"admin_level"`
+	IsMember   int `json:"is_member"`
+
 	MembersCount int `json:"members_count,omitempty"`
+}
+
+func (g *GroupObject) IsModerator() bool {
+	return g.AdminLevel >= AdminLevelModerator
+}
+
+func (g *GroupObject) IsEditor() bool {
+	return g.AdminLevel >= AdminLevelEditor
+}
+
+func (g *GroupObject) IsAdministrator() bool {
+	return g.AdminLevel == AdminLevelAdministrator
 }

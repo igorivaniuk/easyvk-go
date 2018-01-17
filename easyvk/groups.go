@@ -15,15 +15,10 @@ type GroupsByIdResponse []GroupObject
 
 // GetById returns information about communities by their IDs.
 // https://vk.com/dev/groups.getById
-func (g *Groups) GetById(groupIds []int, fields string) (GroupsByIdResponse, error) {
-	var groupIdsStr []string
-	for _, gid := range groupIds {
-		text := strconv.Itoa(gid)
-		groupIdsStr = append(groupIdsStr, text)
-	}
+func (g *Groups) GetById(groupIds []int, fields []string) (GroupsByIdResponse, error) {
 	params := map[string]string{
-		"group_ids": strings.Join(groupIdsStr, ","),
-		"fields":    fields,
+		"group_ids": strings.Join(intIdsToString(groupIds), ","),
+		"fields":    strings.Join(fields, ","),
 	}
 	resp, err := g.vk.Request("groups.getById", params)
 	if err != nil {
@@ -36,6 +31,56 @@ func (g *Groups) GetById(groupIds []int, fields string) (GroupsByIdResponse, err
 	}
 
 	return groups, nil
+}
+
+// https://vk.com/dev/groups.isMember
+type IsMembersResponse []IsMember
+
+type IsMember struct {
+	UserId     int `json:"user_id"`
+	Member     int `json:"member"`
+	Request    int `json:"request"`
+	Invitation int `json:"invitation"`
+}
+
+// https://vk.com/dev/groups.isMember
+func (g *Groups) IsMembers(groupId int, userIds []int) (IsMembersResponse, error) {
+	params := map[string]string{
+		"group_id": strconv.Itoa(groupId),
+		"user_ids": strings.Join(intIdsToString(userIds), ","),
+		"extended": "1",
+	}
+	resp, err := g.vk.Request("groups.isMember", params)
+	if err != nil {
+		return nil, err
+	}
+	var res IsMembersResponse
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// https://vk.com/dev/groups.isMember
+func (g *Groups) IsMember(groupId int, userId int) (*IsMember, error) {
+	params := map[string]string{
+		"group_id": strconv.Itoa(groupId),
+		"user_id":  strconv.Itoa(userId),
+		"extended": "1",
+	}
+	resp, err := g.vk.Request("groups.isMember", params)
+	if err != nil {
+		return nil, err
+	}
+	res := &IsMember{}
+	err = json.Unmarshal(resp, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // String with the confirmation code.
@@ -87,14 +132,9 @@ type CallbackServer struct {
 
 // https://vk.com/dev/groups.getCallbackServers
 func (g *Groups) GetCallbackServers(groupId int, serverIds []int) (*GetCallbackServersResponse, error) {
-	var serverIdsStr []string
-	for _, gid := range serverIds {
-		text := strconv.Itoa(gid)
-		serverIdsStr = append(serverIdsStr, text)
-	}
 	params := map[string]string{
 		"group_id":   strconv.Itoa(groupId),
-		"server_ids": strings.Join(serverIdsStr, ","),
+		"server_ids": strings.Join(intIdsToString(serverIds), ","),
 	}
 	resp, err := g.vk.Request("groups.getCallbackServers", params)
 

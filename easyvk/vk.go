@@ -43,6 +43,7 @@ type VK struct {
 	Upload      Upload
 	Wall        Wall
 	Groups      Groups
+	Users       Users
 }
 
 func (vk *VK) SetDebug(val bool) {
@@ -65,6 +66,7 @@ func WithToken(token string) *VK {
 	vk.Upload = Upload{}
 	vk.Wall = Wall{vk}
 	vk.Groups = Groups{vk}
+	vk.Users = Users{vk}
 	return vk
 }
 
@@ -208,7 +210,7 @@ func (vk *VK) Request(method string, params map[string]string) ([]byte, error) {
 	if handler.Error != nil {
 		if vk.Debug {
 			fmt.Printf(
-				"[VkApi] Call method %s, with params: %#v \n[VkApi] Vk error %v \n[VkApi] take: %s\n",
+				"[VkApi] Call method %s, with params: %#v \n[VkApi] Vk error %s \n[VkApi] take: %s\n",
 				method, params, body,
 				time.Since(start),
 			)
