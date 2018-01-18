@@ -325,6 +325,11 @@ var knowEvents = []string{
 	"poll_vote_new",
 	"group_join",
 	"group_leave",
+	"group_officers_edit",
+	"group_change_settings",
+	"group_change_photo",
+	"user_block",
+	"user_unblock",
 }
 
 // https://vk.com/dev/groups.setCallbackSettings
