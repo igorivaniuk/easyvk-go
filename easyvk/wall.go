@@ -94,7 +94,7 @@ func (w *Wall) DeleteComment(ownerID, commentId int) (bool, error) {
 type CreateCommentParams struct {
 	OwnerID        int
 	PostID         int
-	FromGroup      bool
+	FromGroup      int
 	Message        string
 	ReplyToComment int
 	Attachments    string
@@ -111,7 +111,7 @@ func (w *Wall) CreateComment(p CreateCommentParams) (int, error) {
 		"attachments":      p.Attachments,
 		"post_id":          fmt.Sprint(p.PostID),
 		"guid":             p.GUID,
-		"from_group":       boolConverter(p.FromGroup),
+		"from_group":       fmt.Sprint(p.FromGroup),
 		"sticker_id":       fmt.Sprint(p.StickerID),
 		"reply_to_comment": fmt.Sprint(p.ReplyToComment),
 	}
