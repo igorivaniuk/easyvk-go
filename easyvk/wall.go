@@ -90,3 +90,40 @@ func (w *Wall) DeleteComment(ownerID, commentId int) (bool, error) {
 	}
 	return ok == 1, nil
 }
+
+type CreateCommentParams struct {
+	OwnerID        int
+	PostID         int
+	FromGroup      bool
+	Message        string
+	ReplyToComment int
+	Attachments    string
+	StickerID      int
+	GUID           string
+}
+
+// https://vk.com/dev/wall.createComment
+func (w *Wall) CreateComment(p CreateCommentParams) (int, error) {
+
+	params := map[string]string{
+		"owner_id":         fmt.Sprint(p.OwnerID),
+		"message":          p.Message,
+		"attachments":      p.Attachments,
+		"post_id":          fmt.Sprint(p.PostID),
+		"guid":             p.GUID,
+		"from_group":       boolConverter(p.FromGroup),
+		"sticker_id":       fmt.Sprint(p.StickerID),
+		"reply_to_comment": fmt.Sprint(p.ReplyToComment),
+	}
+
+	resp, err := w.vk.Request("wall.createComment", params)
+	if err != nil {
+		return 0, err
+	}
+
+	postId, err := strconv.Atoi(string(resp))
+	if err != nil {
+		return 0, err
+	}
+	return postId, nil
+}
