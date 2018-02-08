@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Groups struct {
@@ -368,4 +369,42 @@ func (g *Groups) SetCallbackSettings(groupId, serverId int, enableEvents []strin
 	}
 
 	return res, nil
+}
+
+type BanUserParams struct {
+	GroupID int
+	UserID  int
+	EndDate time.Time
+	//причина бана:
+	//0 — другое (по умолчанию);
+	//1 — спам;
+	//2 — оскорбление участников;
+	//3 — нецензурные выражения;
+	//4 — сообщения не по теме.
+	Reason         int
+	Comment        string
+	CommentVisible bool
+}
+
+// https://vk.com/dev/groups.banUser
+func (g *Groups) BanUser(p BanUserParams) (bool, error) {
+	params := map[string]string{
+		"group_id":        strconv.Itoa(p.GroupID),
+		"user_id":         strconv.Itoa(p.UserID),
+		"end_date":        strconv.Itoa(int(p.EndDate.Unix())),
+		"reason":          strconv.Itoa(p.Reason),
+		"comment":         p.Comment,
+		"comment_visible": boolConverter(p.CommentVisible),
+	}
+
+	resp, err := g.vk.Request("groups.banUser", params)
+	if err != nil {
+		return false, err
+	}
+
+	ok, err := strconv.ParseUint(string(resp), 10, 8)
+	if err != nil {
+		return false, err
+	}
+	return ok == 1, nil
 }
