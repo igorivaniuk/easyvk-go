@@ -121,9 +121,13 @@ func (w *Wall) CreateComment(p CreateCommentParams) (int, error) {
 		return 0, err
 	}
 
-	postId, err := strconv.Atoi(string(resp))
+	var info struct {
+		CommentID int `json:"comment_id"`
+	}
+
+	err = json.Unmarshal(resp, &info)
 	if err != nil {
 		return 0, err
 	}
-	return postId, nil
+	return info.CommentID, nil
 }
